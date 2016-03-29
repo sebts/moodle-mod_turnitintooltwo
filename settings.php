@@ -30,8 +30,12 @@ if ($ADMIN->fulltree) {
 
     $library_warning = '';
     if (!extension_loaded('XMLWriter')) {
-        $library_warning = html_writer::tag('div', get_string('noxmlwriterlibrary', 'turnitintooltwo'),
-                                                array('class' => 'library_not_present_warning'));
+        $library_warning .= html_writer::tag('div', get_string('noxmlwriterlibrary', 'turnitintooltwo'),
+                                                array('class' => 'tii_library_not_present_warning'));
+    }
+    if (!extension_loaded('mbstring')) {
+        $library_warning .= html_writer::tag('div', get_string('nombstringlibrary', 'turnitintooltwo'),
+                                                array('class' => 'tii_library_not_present_warning'));
     }
 
     $tabmenu = $turnitintooltwoview->draw_settings_menu($module, 'settings').
@@ -48,7 +52,7 @@ if ($ADMIN->fulltree) {
             $tabmenu .= html_writer::tag('script', '', array("type" => "text/javascript",
                                                     "src" => $CFG->wwwroot."/mod/turnitintooltwo/jquery/jquery-1.8.2.min.js")).
                         html_writer::tag('script', '', array("type" => "text/javascript",
-                                                    "src" => $CFG->wwwroot."/mod/turnitintooltwo/jquery/turnitintooltwo_settings.js"));
+                                                    "src" => $CFG->wwwroot."/mod/turnitintooltwo/jquery/turnitintooltwo_settings.min.js"));
         } else {
             $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin('turnitintooltwo-turnitintooltwo_settings', 'mod_turnitintooltwo');
@@ -219,13 +223,10 @@ if ($ADMIN->fulltree) {
     $settings->add($pseudoselect);
 
     if (isset($config->enablepseudo) AND $config->enablepseudo) {
-        $config->pseudofirstname = ( isset( $config->pseudofirstname ) ) ?
-                                        $config->pseudofirstname : get_string('defaultcoursestudent');
-
         $settings->add(new admin_setting_configtext('turnitintooltwo/pseudofirstname',
                                                         get_string('pseudofirstname', 'turnitintooltwo'),
                                                         get_string('pseudofirstname_desc', 'turnitintooltwo'),
-                                                        get_string('defaultcoursestudent')));
+                                                        TURNITINTOOLTWO_DEFAULT_PSEUDO_FIRSTNAME));
 
         $lnoptions = array( 0 => get_string('user') );
 
@@ -240,8 +241,8 @@ if ($ADMIN->fulltree) {
                                                         0, $lnoptions));
 
         $settings->add(new admin_setting_configselect('turnitintooltwo/lastnamegen',
-                                                        get_string('psuedolastnamegen', 'turnitintooltwo'),
-                                                        get_string('psuedolastnamegen_desc', 'turnitintooltwo' ),
+                                                        get_string('pseudolastnamegen', 'turnitintooltwo'),
+                                                        get_string('pseudolastnamegen_desc', 'turnitintooltwo' ),
                                                         0, $ynoptions));
 
         $settings->add(new admin_setting_configtext('turnitintooltwo/pseudosalt',
@@ -293,6 +294,12 @@ if ($ADMIN->fulltree) {
                                                     get_string('studentreports', 'turnitintooltwo'),
                                                     '', 0, $ynoptions ));
 
+    $gradedisplayoptions = array(1 => get_string('displaygradesaspercent', 'turnitintooltwo'),
+                                 2 => get_string('displaygradesasfraction', 'turnitintooltwo'));
+    $settings->add(new admin_setting_configselect('turnitintooltwo/default_gradedisplay',
+                                                    get_string('displaygradesas', 'turnitintooltwo'),
+                                                    '', 2, $gradedisplayoptions ));
+
     $settings->add(new admin_setting_configselect('turnitintooltwo/default_allownonor',
                                                     get_string('allownonor', 'turnitintooltwo'),
                                                     '', 0, $ynoptions ));
@@ -308,7 +315,7 @@ if ($ADMIN->fulltree) {
                                                     get_string('reportgenspeed', 'turnitintooltwo'),
                                                     '', 0, $genoptions ));
 
-    $suboptions = array( 0 => get_string('norepository', 'turnitintooltwo'), 
+    $suboptions = array( 0 => get_string('norepository', 'turnitintooltwo'),
                         1 => get_string('standardrepository', 'turnitintooltwo'));
 
     if (!isset($config->repositoryoption)) {

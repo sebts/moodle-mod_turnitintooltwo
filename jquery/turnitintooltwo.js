@@ -188,7 +188,13 @@ jQuery(document).ready(function($) {
 
     // Activate datatable tabs on submission inbox
     if ($("#tabs").length > 0) {
+        // Set tab position.
+        var activeTab = 0
+        if ($("#tab_position").length > 0) {
+            var activeTab = $('#tab_position').text();
+        }
         $("#tabs").tabs( {
+            "active": activeTab,
             "show": function(event, ui) {
                 var table = $.fn.dataTable.fnTables(true);
                 if ( table.length > 0 ) {
@@ -359,15 +365,16 @@ jQuery(document).ready(function($) {
 
     // When the refresh submissions link is clicked, the data in each datatable needs to be reloaded
     $(".refresh_link").click(function () {
+        if ($(this).is(":visible")) {
+            $(".refresh_link").hide();
+            $(".refreshing_link").show();
 
-        $(".refresh_link").hide();
-        $(".refreshing_link").show();
-
-        $('table.submissionsDataTable').each(function() {
-            refreshRequested[$(this).attr("id")] = 1;
-            partTables[$(this).attr("id")].fnReloadAjax();
-            partTables[$(this).attr("id")].fnStandingRedraw();
-        });
+            $('table.submissionsDataTable').each(function() {
+                refreshRequested[$(this).attr("id")] = 1;
+                partTables[$(this).attr("id")].fnReloadAjax();
+                partTables[$(this).attr("id")].fnStandingRedraw();
+            });
+        }
         return false;
     });
 
@@ -553,6 +560,11 @@ jQuery(document).ready(function($) {
         var due_date = $('#date_due_'+idStr[2]).html();
         var due_date_unix = moment(due_date).unix();
 
+        var dvtype = idStr[0];
+        var submission_id = idStr[1];
+        var part_id = idStr[2];
+        var user_id = idStr[3];
+
         // Show resubmission grade warning if the due date has not passed.
         if (due_date_unix > moment().unix()) {
             if ($(this).hasClass('graded_warning')) {
@@ -563,25 +575,27 @@ jQuery(document).ready(function($) {
         }
 
         if (proceed) {
-            var url = $('#'+idStr[0]+'_url_'+idStr[1]).html()+'&viewcontext=box&do='+idStr[0]+'&submissionid='+idStr[1]+'&sesskey='+M.cfg.sesskey;
-            var dvWindow = window.open('about:blank', 'dv_'+idStr[1]);
-            var width = $(window).width();
-            var height = $(window).height();
-            dvWindow.document.write('<title>Document Viewer</title>');
-            dvWindow.document.write('<style>html, body { margin: 0; padding: 0; border: 0; }</style>');
-            dvWindow.document.write('<frameset><frame id="dvWindow" name="dvWindow"></frame></frameset>');
-            dvWindow.document.getElementById('dvWindow').src = url;
-            dvWindow.document.close();
-            if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
-                // beforeunload event does not work in Safari.
-                $(dvWindow).bind('unload', function() {
-                    $("#refresh_"+idStr[2]).click();
-                });
-            } else {
-                $(dvWindow).bind('beforeunload', function() {
-                    $("#refresh_"+idStr[2]).click();
-                });
-            }
+            dvWindow = window.open('', '_blank');
+            var loading = '<div style="text-align:center;">';
+            loading += '<img src="'+M.cfg.wwwroot+'/mod/turnitintooltwo/pix/tiiIcon.svg" style="width:100px; height: 100px">';
+            loading += '<p style="font-family: Arial, Helvetica, sans-serif;">'+M.str.turnitintooltwo.loadingdv+'</p>';
+            loading += '</div>';
+            $(dvWindow.document.body).html(loading);
+
+            // Get html to launch DV
+            $.ajax({
+                type: "POST",
+                url: M.cfg.wwwroot+"/mod/turnitintooltwo/ajax.php",
+                dataType: "json",
+                data: {action: dvtype, submission: submission_id, assignment: $('#assignment_id').html()},
+                success: function(data) {
+                    $(dvWindow.document.body).html(loading+data);
+                    dvWindow.document.forms[0].submit();
+                    dvWindow.document.close();
+
+                    checkDVClosed(part_id);
+                }
+            });
         }
     });
 
@@ -710,36 +724,30 @@ jQuery(document).ready(function($) {
 
     $('#inbox_form form, .launch_form form').submit();
 
-    // Open a light box containing the Turnitin EULA
-    $(document).on('click', '.turnitin_eula_link', function(e) {
-        var $this = jQuery(this);
-        if (!$this.hasClass("colorbox-initialized")) {
-            e.preventDefault();
-            $this.addClass("colorbox-initialized").colorbox({
-                open:true,iframe:true, width:"766px", height:"596px", opacity: "0.7", className: "eula_view", scrolling: "false",
-                onLoad: function() { getLoadingGif(); },
-                onComplete: function() {
-                    $(window).on("message", function(ev) {
-                        var message = typeof ev.data === 'undefined' ? ev.originalEvent.data : ev.data;
+    // Open an iframe light box containing the Rubric View
+    if ($('.turnitin_eula_link').length > 0) {
+        $('.turnitin_eula_link').colorbox({
+            iframe:true, width:"766px", height:"596px", opacity: "0.7", className: "eula_view", scrolling: "false",
+            onLoad: function() { getLoadingGif(); },
+            onComplete: function() {
+                $(window).on("message", function(ev) {
+                    var message = typeof ev.data === 'undefined' ? ev.originalEvent.data : ev.data;
 
-                        $.ajax({
-                            type: "POST",
-                            url: M.cfg.wwwroot +"/mod/turnitintooltwo/ajax.php",
-                            dataType: "json",
-                            data: {action: "acceptuseragreement", message: message, sesskey: M.cfg.sesskey},
-                            success: function(data) { window.location.reload(); },
-                            error: function(data) { window.location.reload(); }
-                        });
+                    $.ajax({
+                        type: "POST",
+                        url: M.cfg.wwwroot +"/mod/turnitintooltwo/ajax.php",
+                        dataType: "json",
+                        data: {action: "acceptuseragreement", message: message, sesskey: M.cfg.sesskey},
+                        success: function(data) { window.location.reload(); },
+                        error: function(data) { window.location.reload(); }
                     });
-                },
-                onCleanup: function() {
-                    hideLoadingGif();
-                }
-            });
-        }
-
-        return false;
-    });
+                });
+            },
+            onCleanup: function() {
+                hideLoadingGif();
+            }
+        });
+    }
 
     // Enable the editing fields in the inbox parts table
     function enableEditingText(part_id) {
@@ -1117,7 +1125,7 @@ jQuery(document).ready(function($) {
             var idStr = $(this).attr("id").split("_");
             // Don't open OR DV if score is pending.
             if (!$(this).children('.score_colour').hasClass('score_colour_')) {
-                openDV(idStr[0], idStr[1], idStr[2], idStr[3]);
+                downloadOriginalFile(idStr[0], idStr[1], idStr[2], idStr[3]);
             }
         });
     }
@@ -1146,41 +1154,31 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // Open the document viewer within a frame in a new tab
-    function openDV(dvtype, submission_id, part_id, user_id) {
-        var proceed = true;
-
-        // Show resubmission grade warning.
-        if ($('#grademark_'+submission_id+'_'+part_id+'_'+user_id).hasClass('graded_warning') && dvtype != 'downloadoriginal') {
-            if (!confirm(M.str.turnitintooltwo.resubmissiongradewarn)) {
-                proceed = false;
+    // Put the form in to the submissions table row and submit it.
+    // This will download the relevant original file
+    function downloadOriginalFile(dvtype, submission_id, part_id, user_id) {
+        // Get html to launch DV
+        $.ajax({
+            type: "POST",
+            url: M.cfg.wwwroot+"/mod/turnitintooltwo/ajax.php",
+            dataType: "html",
+            data: {action: dvtype, submission: submission_id, assignment: $('#assignment_id').html()},
+            success: function(data) {
+                $("#"+dvtype+"_form_"+submission_id).html(data);
+                $("#"+dvtype+"_form_"+submission_id).children("form").submit();
+                $("#"+dvtype+"_form_"+submission_id).html("");
             }
-        }
+        });
+    }
 
-        if (proceed) {
-            $.ajax({
-                type: "POST",
-                url: "ajax.php",
-                dataType: "html",
-                data: {action: dvtype, assignment: $('#assignment_id').html(), submission: submission_id},
-                success: function(data) {
-                    $("#"+dvtype+"_form_"+submission_id).html(data);
-                    if (dvtype == "downloadoriginal") {
-                        $("#"+dvtype+"_form_"+submission_id).children("form").submit();
-                    } else {
-                        $("#"+dvtype+"_form_"+submission_id).children("form").on("submit", function(event) {
-                            dvWindow = window.open('', 'dv_'+submission_id);
-                            dvWindow.document.write('<frameset><frame id="dvWindow" name="dvWindow"></frame></frameset>');
-                            dvWindow.document.close();
-                            $(dvWindow).bind('beforeunload', function() {
-                                refreshInboxRow(dvtype, submission_id, part_id, user_id);
-                            });
-                        });
-                        $("#"+dvtype+"_form_"+submission_id).children("form").submit();
-                    }
-                    $("#"+dvtype+"_form_"+submission_id).html("");
-                }
-            });
+    // Check whether the DV is still open, refresh the opening window when it closes.
+    function checkDVClosed(part_id) {
+        if (window.dvWindow.closed) {
+            $("#refresh_"+part_id).click();
+        } else {
+            setTimeout( function(){
+                            checkDVClosed(part_id);
+                        }, 500);
         }
     }
 

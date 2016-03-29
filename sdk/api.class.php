@@ -14,35 +14,35 @@ require_once( 'lti.class.php' );
  * @subpackage APIRequest
  */
 class TurnitinAPI {
-    private $accountid;
-    private $sharedkey;
-    private $apibaseurl;
-    private $integrationid;
-    private $language;
-    private $debug;
-    private $logpath;
+    protected $accountid;
+    protected $sharedkey;
+    protected $apibaseurl;
+    protected $integrationid;
+    protected $language;
+    protected $debug;
+    protected $logpath;
 
     protected $integrationversion;
     protected $pluginversion;
 
-    private $proxyhost;
-    private $proxyport;
-    private $proxytype;
-    private $proxyuser;
-    private $proxypassword;
-    private $proxybypass;
-    private $sslcertificate;
+    protected $proxyhost;
+    protected $proxyport;
+    protected $proxytype;
+    protected $proxyuser;
+    protected $proxypassword;
+    protected $proxybypass;
+    protected $sslcertificate;
 
-    private $istestingconnection;
-    private $perflog;
+    protected $testingconnection;
+    protected $performancelog;
 
-    private $personwsdl;
-    private $coursesectionwsdl;
-    private $lineitemwsdl;
-    private $membershipwsdl;
-    private $resultwsdl;
+    protected $personwsdl;
+    protected $coursesectionwsdl;
+    protected $lineitemwsdl;
+    protected $membershipwsdl;
+    protected $resultwsdl;
 
-    const VERSION = '1.0.79';
+    const VERSION = '1.0.80';
 
     /**
      * Instantiate the API object.
@@ -71,8 +71,8 @@ class TurnitinAPI {
         $this->integrationid = $integrationid;
         $this->language = $language;
 
-        $this->istestingconnection = false;
-        $this->perflog = null;
+        $this->testingconnection = false;
+        $this->performancelog = null;
 
         $this->personwsdl = dirname(__FILE__).'/wsdl/lis-person.wsdl';
         $this->coursesectionwsdl = dirname(__FILE__).'/wsdl/lis-coursesection.wsdl';
@@ -181,7 +181,7 @@ class TurnitinAPI {
     }
 
     /**
-     * Get the proxy bypass
+     * Set the proxy bypass
      *
      * @return string $proxybypass
      */
@@ -212,35 +212,35 @@ class TurnitinAPI {
      *
      * @return boolean
      */
-    public function getIsTestingConnection() {
-        return $this->istestingconnection;
+    public function getTestingConnection() {
+        return $this->testingconnection;
     }
 
     /**
      * Set testing connection flag
      *
-     * @param boolean $istestingconnection
+     * @param boolean $testingconnection
      */
-    public function setIsTestingConnection($istestingconnection) {
-        $this->istestingconnection = $istestingconnection;
+    public function setTestingConnection($testingconnection) {
+        $this->testingconnection = $testingconnection;
     }
 
     /**
      * Get logger for performance data
      *
-     * @return PerfLog
+     * @return PerformanceLog
      */
-    public function getPerflog() {
-        return $this->perflog;
+    public function getPerformanceLog() {
+        return $this->performancelog;
     }
 
     /**
      * Set logger for performance data
      *
-     * @param PerfLog $perflog
+     * @param PerformanceLog $performancelog
      */
-    public function setPerflog($perflog) {
-        $this->perflog = $perflog;
+    public function setPerformanceLog($performancelog) {
+        $this->performancelog = $performancelog;
     }
 
     /**
@@ -339,7 +339,7 @@ class TurnitinAPI {
      * @param stdClass $service
      * @return stdClass
      */
-    private function setOptions( $service ) {
+    protected function setOptions( $service ) {
         $service->setLogPath( $this->logpath );
         $service->setDebug( $this->debug );
         $service->setAccountId( $this->accountid );
@@ -375,8 +375,8 @@ class TurnitinAPI {
         $service->setIntegrationVersion( $this->integrationversion);
         $service->setPluginVersion( $this->pluginversion);
 
-        $service->setIsTestingConnection($this->istestingconnection);
-        $service->setPerflog($this->perflog);
+        $service->setTestingConnection($this->testingconnection);
+        $service->setPerformanceLog($this->performancelog);
         return $service;
     }
 
@@ -458,6 +458,42 @@ class TurnitinAPI {
      */
     public function createUser( $user ) {
         $userSoap = $this->setOptions( new UserSoap( $this->personwsdl, $this->getServiceOptions( 'person' ) ) );
+        return $userSoap->createUser( $user );
+    }
+
+    /**
+     * Create a new Student User on Turnitin.
+     *
+     * Takes a {@link TiiUser.html TiiUser} or a
+     * {@link TiiPseudoUser.html TiiPseudoUser} object containing the required parameters
+     * and returns a {@link Response.html Response} object containing the data from the response.
+     *
+     * Convenience method that adds the Learner role (see: {@link TurnitinAPI.html#createUser createUser})
+     *
+     * @param TiiUser $user
+     * @return Response
+     */
+    public function createStudentUser( $user ) {
+        $userSoap = $this->setOptions( new UserSoap( $this->personwsdl, $this->getServiceOptions( 'person' ) ) );
+        $user->setDefaultRole( 'Learner' );
+        return $userSoap->createUser( $user );
+    }
+
+    /**
+     * Create a new Instructor User on Turnitin.
+     *
+     * Takes a {@link TiiUser.html TiiUser} or a
+     * {@link TiiPseudoUser.html TiiPseudoUser} object containing the required parameters
+     * and returns a {@link Response.html Response} object containing the data from the response.
+     *
+     * Convenience method that adds the Instructor role (see: {@link TurnitinAPI.html#createUser createUser})
+     *
+     * @param TiiUser $user
+     * @return Response
+     */
+    public function createInstructorUser( $user ) {
+        $userSoap = $this->setOptions( new UserSoap( $this->personwsdl, $this->getServiceOptions( 'person' ) ) );
+        $user->setDefaultRole( 'Instructor' );
         return $userSoap->createUser( $user );
     }
 
@@ -884,6 +920,40 @@ class TurnitinAPI {
      */
     public function createMembership( $membership ) {
         $membershipSoap = $this->setOptions( new MembershipSoap( $this->membershipwsdl, $this->getServiceOptions( 'membership' ) ) );
+        return $membershipSoap->createMembership( $membership );
+    }
+
+    /**
+     * Create a new Student Membership on a Class.
+     *
+     * Takes a {@link TiiMembership.html TiiMembership} object containing the required parameters
+     * and returns a {@link Response.html Response} object containing the data from the response.
+     *
+     * Convenience method that adds the Learner role (see: {@link TurnitinAPI.html#createMembership createMembership})
+     *
+     * @param TiiMembership $membership
+     * @return Response
+     */
+    public function createStudentMembership( $membership ) {
+        $membershipSoap = $this->setOptions( new MembershipSoap( $this->membershipwsdl, $this->getServiceOptions( 'membership' ) ) );
+        $membership->setRole( 'Learner' );
+        return $membershipSoap->createMembership( $membership );
+    }
+
+    /**
+     * Create a new Instructor Membership on a Class.
+     *
+     * Takes a {@link TiiMembership.html TiiMembership} object containing the required parameters
+     * and returns a {@link Response.html Response} object containing the data from the response.
+     *
+     * Convenience method that adds the Instructor role (see: {@link TurnitinAPI.html#createMembership createMembership})
+     *
+     * @param TiiMembership $membership
+     * @return Response
+     */
+    public function createInstructorMembership( $membership ) {
+        $membershipSoap = $this->setOptions( new MembershipSoap( $this->membershipwsdl, $this->getServiceOptions( 'membership' ) ) );
+        $membership->setRole( 'Instructor' );
         return $membershipSoap->createMembership( $membership );
     }
 
@@ -2817,3 +2887,5 @@ class TurnitinAPI {
     }
 
 }
+
+//?>

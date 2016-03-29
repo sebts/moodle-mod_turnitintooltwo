@@ -31,8 +31,8 @@ class Soap extends SoapClient {
     private $proxybypass;
     private $sslcertificate;
 
-    private $istestingconnection;
-    private $perflog;
+    private $testingconnection;
+    private $performancelog;
 
     protected $extensions;
 
@@ -51,7 +51,7 @@ class Soap extends SoapClient {
     }
 
     public function getIntegrationVersion() {
-        return $this->integrationversion;
+        return (empty($this->integrationversion)) ? 'Not provided' : $this->integrationversion;
     }
 
     public function setPluginVersion( $pluginversion = null ) {
@@ -59,7 +59,7 @@ class Soap extends SoapClient {
     }
 
     public function getPluginVersion() {
-        return $this->pluginversion;
+        return (empty($this->pluginversion)) ? 'Not provided' : $this->pluginversion;
     }
 
     public function setIntegrationId( $product ) {
@@ -161,20 +161,20 @@ class Soap extends SoapClient {
         $this->sslcertificate = $sslcertificate;
     }
 
-    public function getIsTestingConnection() {
-        return $this->$istestingconnection;
+    public function getTestingConnection() {
+        return $this->$testingconnection;
     }
 
-    public function setIsTestingConnection($istestingconnection) {
-        $this->istestingconnection = $istestingconnection;
+    public function setTestingConnection($testingconnection) {
+        $this->testingconnection = $testingconnection;
     }
 
-    public function getPerflog() {
-        return $this->perflog;
+    public function getPerformanceLog() {
+        return $this->performancelog;
     }
 
-    public function setPerflog($perflog) {
-        $this->perflog = $perflog;
+    public function setPerformanceLog($performancelog) {
+        $this->performancelog = $performancelog;
     }
 
     public function genUuid() {
@@ -269,12 +269,17 @@ class Soap extends SoapClient {
                         'AllowNonOrSubmissions' => 'Boolean',
                         'Submitter' => 'Integer',
                         'OriginalityReportCapable' => 'Boolean',
-                        'AcceptNothingSubmission' => 'Boolean'
+                        'AcceptNothingSubmission' => 'Boolean',
+                        'EraterPromptId' => 'String',
+                        'EraterClientId' => 'String',
+                        'EraterUsername' => 'String',
+                        'EraterPassword' => 'String'
                         );
-        $this->istestingconnection = false;
-        $this->perflog = null;
+        $this->testingconnection = false;
+        $this->performancelog = null;
         $this->integrationversion = '';
         $this->pluginversion = '';
+
         parent::__construct( $wsdl, $options );
     }
 
@@ -321,14 +326,14 @@ class Soap extends SoapClient {
 
         $this->setHttpHeaders( join( PHP_EOL, $curl_headers ) );
 
-        if ($this->perflog !== null) {
-            $this->perflog->start_timer();
+        if ($this->performancelog !== null) {
+            $this->performancelog->start_timer();
         }
 
         $result = curl_exec($ch);
 
-        if ($this->perflog !== null) {
-            $this->perflog->stop_timer($ch);
+        if ($this->performancelog !== null) {
+            $this->performancelog->stop_timer($ch);
         }
 
         if( $result === false) {
@@ -353,3 +358,5 @@ class Soap extends SoapClient {
     }
 
 }
+
+//?>

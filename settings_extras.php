@@ -136,7 +136,7 @@ switch ($cmd) {
     case "activitylog":
     case "perflog":
 
-        $logsdir = $CFG->dataroot . "/temp/turnitintooltwo/logs/";
+        $logsdir = $CFG->tempdir . "/turnitintooltwo/logs/";
         $savefile = $cmd.'_'.$filedate.'.txt';
 
         if (!is_null($filedate)) {
@@ -298,7 +298,7 @@ switch ($cmd) {
     case "courses":
         $jsrequired = true;
 
-        $output .= html_writer::tag('h2', get_string('coursebrowser', 'turnitintooltwo'));
+        $output .= html_writer::tag('h2', get_string('restorationheader', 'turnitintooltwo'));
         $output .= html_writer::tag('p', get_string('coursebrowserdesc', 'turnitintooltwo'));
 
         $coursesearchform = html_writer::label(get_string('coursetitle', 'turnitintooltwo').': ', 'search_course_title');

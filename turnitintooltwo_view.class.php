@@ -100,11 +100,11 @@ class turnitintooltwo_view {
             $PAGE->requires->js($jsurl, true);
             $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.dataTables.plugins.js');
             $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.js');
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo.min.js');
             $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo_extra.js');
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo_extra.min.js');
             $PAGE->requires->js($jsurl, true);
-            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo_settings.js');
+            $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/turnitintooltwo_settings.min.js');
             $PAGE->requires->js($jsurl, true);
             $jsurl = new moodle_url('/mod/turnitintooltwo/jquery/jquery.dataTables.columnFilter.js');
             $PAGE->requires->js($jsurl, true);
@@ -149,6 +149,7 @@ class turnitintooltwo_view {
         $PAGE->requires->string_for_js('maxmarkserror', 'turnitintooltwo');
         $PAGE->requires->string_for_js('disableanonconfirm', 'turnitintooltwo');
         $PAGE->requires->string_for_js('closebutton', 'turnitintooltwo');
+        $PAGE->requires->string_for_js('loadingdv', 'turnitintooltwo');
     }
 
     /**
@@ -182,7 +183,7 @@ class turnitintooltwo_view {
                         get_string('files', 'turnitintooltwo'), get_string('files', 'turnitintooltwo'), false);
 
         $tabs[] = new tabobject('courses', $CFG->wwwroot.'/mod/turnitintooltwo/settings_extras.php?cmd=courses',
-                        get_string('coursebrowser', 'turnitintooltwo'), get_string('coursebrowser', 'turnitintooltwo'), false);
+                        get_string('restorationheader', 'turnitintooltwo'), get_string('restorationheader', 'turnitintooltwo'), false);
 
         $selected = ($cmd == 'activitylog') ? 'apilog' : $cmd;
 
@@ -465,7 +466,7 @@ class turnitintooltwo_view {
      * @return type
      */
     public function init_submission_inbox($cm, $turnitintooltwoassignment, $partdetails, $turnitintooltwouser) {
-        global $CFG, $OUTPUT, $USER;
+        global $CFG, $OUTPUT, $USER, $DB;
         $config = turnitintooltwo_admin_config();
 
         $istutor = has_capability('mod/turnitintooltwo:grade', context_module::instance($cm->id));
@@ -533,6 +534,12 @@ class turnitintooltwo_view {
         $output .= $OUTPUT->box_start('', 'tabs');
         $tabitems = array();
         $i = 0;
+
+        // Determine which tab position to enable after a submission deletion.
+        $tab_position = array_search(optional_param('partid', 0, PARAM_INT), array_keys($partdetails));
+        if ($tab_position) {
+            $output .= html_writer::tag('div', $tab_position, array('id' => 'tab_position', 'class' => 'hidden_class'));
+        }
 
         foreach ($partdetails as $partid => $partobject) {
             if (!empty($partid)) {
@@ -640,12 +647,22 @@ class turnitintooltwo_view {
                                                 array("class" => "messages_inbox"));
                 }
 
+                // Check that nonsubmitter messages have been configured to be sent.
+                $messageoutputs = get_config('message');
+                $nonsubsemailpermitted = false;
+                foreach ($messageoutputs as $k => $v) {
+                    if (strpos($k, '_mod_turnitintooltwo_nonsubmitters_loggedin') !== false ) {
+                        $nonsubsemailpermitted = true;
+                        break;
+                    }
+                }
+
                 // Link to email nonsubmitters.
                 $emailnonsubmitters = '';
-                if ($turnitintooltwouser->get_user_role() == 'Instructor') {
+                if ($turnitintooltwouser->get_user_role() == 'Instructor' && $nonsubsemailpermitted) {
                     $emailnonsubmitters = html_writer::link($CFG->wwwroot.'/mod/turnitintooltwo/view.php?id='.$cm->id.
                                                             '&part='.$partid.'&do=emailnonsubmittersform&view_context=box_solid',
-                                                        html_writer::tag('i', '', array('class' => 'fa fa-reply-all fa-lg')).' '.get_string('emailnonsubmitters', 'turnitintooltwo'),
+                                                        html_writer::tag('i', '', array('class' => 'fa fa-reply-all fa-lg')).' '.get_string('messagenonsubmitters', 'turnitintooltwo'),
                                                             array("class" => "nonsubmitters_link", "id" => "nonsubmitters_".$partid));
                 }
 
@@ -777,15 +794,15 @@ class turnitintooltwo_view {
         $cells[3] = new html_table_cell($datefield);
         $cells[3]->attributes['class'] = 'data';
 
-        // Show Rubric view if applicable to students.
+        // Show Rubric view if applicable to students. 
         $rubricviewlink = '';
         if (!$istutor && $config->usegrademark && !empty($turnitintooltwoassignment->turnitintooltwo->rubric)) {
             $rubricviewlink .= $OUTPUT->box_start('row_rubric_manager', '');
             $rubricviewlink .= html_writer::link($CFG->wwwroot.'/mod/turnitintooltwo/view.php?id='.$cm->id.
-                                                    '&part='.$partid.'&do=rubricview&view_context=box', '',
+                                                    '&part='.$partid.'&do=rubricview&view_context=box',
+                                                html_writer::tag('span', '', array('class' => 'tiiicon icon-rubric icon-lg', 'id' => 'rubric_view_form')),
                                                 array('class' => 'rubric_view_launch', 'id' => 'rubric_view_launch',
                                                     'title' => get_string('launchrubricview', 'turnitintooltwo')));
-            $rubricviewlink .= html_writer::tag('span', '', array('class' => 'launch_form', 'id' => 'rubric_view_form'));
             $rubricviewlink .= $OUTPUT->box_end(true);
         }
 
@@ -1227,13 +1244,20 @@ class turnitintooltwo_view {
                 // Output grademark icon.
                 $grade = $OUTPUT->box(
                     html_writer::tag('i', '', array('class' => 'fa fa-pencil fa-lg gm-blue')),
-                    'grademark_open' . $class, 'grademark_' . $submission->submission_objectid . '_' . $partid . '_' . $moodleuserid,
+                    'grademark_open ' . $class, 'grademark_' . $submission->submission_objectid . '_' . $partid . '_' . $moodleuserid,
                     array('title' => $CFG->wwwroot . '/mod/turnitintooltwo/view.php?id=' . $cm->id)
                 );
 
                 // Show grade.
-                $grade .= $OUTPUT->box(html_writer::tag('span', $submissiongrade, array("class" => "grade"))
-                                ."/".$parts[$partid]->maxmarks, 'grademark_grade');
+                if ($turnitintooltwoassignment->turnitintooltwo->gradedisplay == 2) { // 2 is fraction
+                    $grade .= $OUTPUT->box(html_writer::tag('span', $submissiongrade, array("class" => "grade"))
+                                    ."/".$parts[$partid]->maxmarks, 'grademark_grade');
+                } else if ($turnitintooltwoassignment->turnitintooltwo->gradedisplay == 1) { // 1 is percentage
+                    $submissiongrade = round($submissiongrade / $parts[$partid]->maxmarks * 100,1).'%';
+                    $grade .= $OUTPUT->box(html_writer::tag('span', $submissiongrade, array("class" => "grade"))
+                                    , 'grademark_grade');
+                }
+
                 // Put in div placeholder for DV launch form.
                 $grade .= $OUTPUT->box('', 'launch_form', 'grademark_form_'.$submission->submission_objectid);
                 // URL for DV launcher
@@ -1373,7 +1397,7 @@ class turnitintooltwo_view {
 
                 $attributes = array("onclick" => "return confirm('".$string."');");
                 $delete = html_writer::link(
-                    $CFG->wwwroot.'/mod/turnitintooltwo/view.php?id='.$cm->id.'&action=deletesubmission&sub='.$submission->id.'&sesskey='.sesskey(),
+                    $CFG->wwwroot.'/mod/turnitintooltwo/view.php?id='.$cm->id.'&part='.$partid.'&action=deletesubmission&sub='.$submission->id.'&sesskey='.sesskey(),
                     html_writer::tag('i', '', array('class' => 'fa fa-trash-o fa-lg')),
                     $attributes
                 );
@@ -1386,7 +1410,7 @@ class turnitintooltwo_view {
 
                 $attributes = array("onclick" => "return confirm('".$string."');");
                 $delete = html_writer::link(
-                    $CFG->wwwroot.'/mod/turnitintooltwo/view.php?id='.$cm->id.'&action=deletesubmission&sub='.$submission->id.'&sesskey='.sesskey(),
+                    $CFG->wwwroot.'/mod/turnitintooltwo/view.php?id='.$cm->id.'&part='.$partid.'&action=deletesubmission&sub='.$submission->id.'&sesskey='.sesskey(),
                     html_writer::tag('i', '', array('class' => 'fa fa-trash-o fa-lg')),
                     $attributes
                 );
@@ -1511,10 +1535,10 @@ class turnitintooltwo_view {
         $lti->setUserId($userid);
         $lti->setRole($userrole);
         $lti->setButtonText($buttonstring);
+        $lti->setFormTarget('');
 
         switch ($type) {
             case "useragreement":
-                $lti->setFormTarget('');
                 $ltifunction = "outputUserAgreementForm";
                 break;
 
@@ -1523,17 +1547,14 @@ class turnitintooltwo_view {
                 break;
 
             case "default":
-                $lti->setFormTarget("dvWindow");
                 $ltifunction = "outputDVDefaultForm";
                 break;
 
             case "origreport":
-                $lti->setFormTarget("dvWindow");
                 $ltifunction = "outputDVReportForm";
                 break;
 
             case "grademark":
-                $lti->setFormTarget("dvWindow");
                 $ltifunction = "outputDVGradeMarkForm";
                 break;
         }
