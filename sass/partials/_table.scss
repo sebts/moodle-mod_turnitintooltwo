@@ -8,7 +8,7 @@
 /*
  * 1. Table styles and related
  */
-.dataTable {
+.submissionsDataTable, #ppErrors, #courseBrowserTable {
     width:100%;
     font-size: 13px;
     border:1px solid $border-color;
@@ -82,7 +82,7 @@
         width: 60px;
     }
 
-    .submit_nothing {
+    .submit_nothing, .submission_title, .delete_paper {
         cursor: pointer;
     }
 
@@ -90,10 +90,6 @@
         width:36px;
         display:inline-block;
         float:right;
-    }
-
-    .submission_title {
-        cursor: pointer;
     }
 
     .late_submission {

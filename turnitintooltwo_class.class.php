@@ -19,6 +19,8 @@
  * @copyright 2012 iParadigms LLC *
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(__DIR__.'/turnitintooltwo_comms.class.php');
 
 class turnitintooltwo_class {
@@ -30,38 +32,39 @@ class turnitintooltwo_class {
     public $sharedrubrics;
 
     public function __construct($id) {
-    	global $DB;
+        global $DB;
 
-    	$this->id = $id;
+        $this->id = $id;
 
-    	if ($turnitincourse = $DB->get_record('turnitintooltwo_courses',
+        if ($turnitincourse = $DB->get_record('turnitintooltwo_courses',
                                 array("courseid" => $id, "course_type" => "TT"))) {
-    		$this->turnitinid = $turnitincourse->turnitin_cid;
+            $this->turnitinid = $turnitincourse->turnitin_cid;
             $this->turnitintitle = $turnitincourse->turnitin_ctl;
-    	}
+        }
     }
 
     /**
      * Update class from Turnitin, mainly to get shared rubrics
      *
-     * @return
+     * @return void
      */
     public function read_class_from_tii() {
-    	// Initialise Comms Object.
+        // Initialise Comms Object.
         $turnitincomms = new turnitintooltwo_comms();
         $turnitincall = $turnitincomms->initialise_api();
 
         $tiiclass = new TiiClass();
 
         try {
-        	$tiiclass->setClassId($this->turnitinid);
+            $tiiclass->setClassId($this->turnitinid);
             $response = $turnitincall->readClass($tiiclass);
             $readclass = $response->getClass();
 
             $rubrics = $readclass->getSharedRubrics();
-			$rubricarray = array();
-        	foreach ($rubrics as $rubric) {
-            	$rubricarray[$rubric->getRubricId()] = $rubric->getRubricName()." [".get_string('sharedrubric', 'turnitintooltwo')."]";
+            $rubricarray = array();
+            $sharedrubricstr = get_string('sharedrubric', 'turnitintooltwo');
+            foreach ($rubrics as $rubric) {
+                $rubricarray[$rubric->getRubricId()] = $rubric->getRubricName()." [".$sharedrubricstr."]";
             }
 
             $this->sharedrubrics = $rubricarray;

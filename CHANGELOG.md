@@ -1,3 +1,149 @@
+### Date:		2017-May-24
+### Release:	v2017052401
+
+- Modified the name sorting on the assignment inbox to allow sorting by surname and firstname.
+- Escape any HTML or Javascript from submission extract before displaying successful submission message.
+- Strip files and images from description in calendar view.
+- Remove filepaths from error messages unless debugging is set to developer level.
+- Fix bug where checkbox settings weren't being saved.
+- Fix course reset failing due to bug introduced by extending assignment titles.
+- Fix the unpopulated drop down menus in support wizard.
+- Add further unit test infrastructure.
+- No longer send digital receipt message for empty grading template submissions.
+- Assign Mexican Spanish to Spanish in Turnitin rather than defaulting to English. (Thanks to @jobcespedes)
+
+**List order now consistent between Moodle and Turnitin assignments** - The Moodle submission inbox displays student names in the first name/last name format (e.g. John Smith) and allows instructors to order the list by last name. However, Turnitin list entries could only be ordered by first name. Turnitin is now aligned with Moodle's list ordering.
+
+**Digital receipts no longer execute script found in a paper** - If a student inserted HTML, JavaScript, or any other script tags in their paper, this was executed when the digital receipt displayed after submission. Fixed it! The digital receipt will no longer execute the script (if any script is included) for future submissions.
+
+**Rectified broken files and images in Moodle calendar** - As Moodle calendar doesn't support files or images, any files or images added to the assignment description would appear as broken in the calendar. We'll now strip all files and images from the description before its transfer into the calendar.
+
+**Removed unnecessary information from error messages** - We received feedback from users that one or two error messages included irrelevant information. Our engineers have worked their magic to ensure that any messages you see are now meaningful and help you to resolve the error you're encountering.
+
+**Course reset is now working as expected** - We had some problems with the Moodle course reset feature after the release of 2017031301, with student papers remaining in place even after opting to reset the course. With debugging enabled, an error message displayed, confirming the issue. We've thankfully managed to resolve the problem and you can now give the course reset feature another try.
+
+**Support wizard issues resolved** - We noticed that some administrators and instructors were having trouble using the Turnitin support wizard within Moodle. One of the wizard drop-down menus failed to populate, causing difficulty in raising a support ticket with us. Bug targeted and eliminated!
+
+**No more digital receipts sent for grading template submissions** - When an instructor uses a grading template to grade a student's work, this acts as a submission and delivered a digital receipt to students. Students found the receipt confusing as they hadn't personally made a submission to Turnitin, but the receipt was advising otherwise. We've stopped digital receipts from being sent to students for grading template submissions.
+
+---
+
+### Date:		2017-March-13
+### Release:	v2017031301
+
+- Minor update Gradebook method refactor so it can be called from other contexts.
+- Extended the character limit for class and assignment titles.
+- Added a warning if PHP SOAP extension is not installed.
+- Implemented a 'force refresh button' to assignment settings page.
+- Resolved an issue affecting revealer's name in anonymous submissions.
+- Stopped re-enrolling previously un-enrolled Moodle students.
+- Fixed a bug with anonymity on newly created assignment parts.
+- Resolved bug affecting assignment inbox access.
+- Fixed an issue causing all submissions to refresh upon individual student login.
+
+
+**Extended the character limit for class and assignment titles** - Some users found the character limit for class and assignment titles restrictive; we've extended the title limits to 256 characters, allowing more freedom when setting up classes and assignments.
+
+**Added a warning if PHP SOAP extension is not installed** - We found that installation would fail without PHP SOAP (PHP5-SOAP, PHP7-SOAP) being installed, and although it's a required package, this wasn't listed as being so. We've added a warning in settings if the extension is not installed, saving you from a failed installation. 
+
+**Implemented a 'force refresh button' to assignment settings page** - Some users informed us that grades were failing to appear in the grade book after their insertion in the document viewer, as well as submission updates not transferring to the assignment inbox. To fix this, we've added a button allowing you to force refresh this data, syncing all submission changes to the grade book and inbox.
+
+**Resolved an issue affecting revealer's name in anonymous submissions** - Reports revealed that the student's name appeared as the revealer of an anonymous submission, rather than the name of the instructor. This resulted in Turnitin administrators having no record of the instructor who requested the reveal. This has now been rectified.
+
+**Stopped re-enrolling previously unenrolled Moodle students** - It appeared that unenrolled students would be re-enrolled when instructors downloaded submissions from Turnitin. We've fixed this! Now, when a student who has submitted is removed from a Moodle course, they will not be re-enrolled when the submission is refreshed.
+
+**Fixed a bug with anonymity on newly created assignment parts** - We received reports that when a second (or more parts) were added to a single-part anonymous assignment, the anonymity setting was not passed across. Our engineers have fixed this problem and our testers have ensured that new parts of an anonymous assignment are anonymous. Thanks for your patience with this one!
+
+**Resolved bug affecting assignment inbox access** - If a student had two submissions for one assignment part in Turnitin, the Moodle assignment inbox would continue to load and hang with the error message: Loading data from Turnitin. We resolved this by ensuring that the system only saves one submission record per student per assignment when refreshing submissions from Turnitin.
+
+**Fixed an issue causing all submissions to refresh upon individual student login** - If a student logged into the assignment inbox, all submissions were refreshed, causing students to show as having updated the grade for other graded submission(s) and subsequently appear as graders in grade reports. We've resolved this by ensuring that a student only has an effect on their own submission.
+
+---
+
+### Date:		2017-February-22
+### Release:	v2017022201
+
+- Verified against Moodle 3.2.
+- UI modified for compatibility with Boost theme.
+- First unit tests added to plugin.
+
+---
+
+### Date:		2017-January-25
+### Release:	v2017012501
+
+- This release and future releases will no longer work on Moodle 2.6.
+- The language strings have been updated across all supported languages.
+- The implementation of submission deletion has been changed so that it is no longer a link.
+- Data dump display has been optimised to help with large databases.
+- If the required fileinfo extension is missing it will now be mentioned on the plugin settings page.
+- The plugin will now not make excessive calls to Turnitin when using the bulk enrolment tool.
+- Suspended users now no longer appear in the assignment inbox.
+- Non-submitter e-mails will no longer be sent to inactive students. (Thanks to @junwan6)
+- Travis-CI has been aded to the plugin as an extra QA resource to help flag any issues with the code.
+- Inclusion paths were consolidated for the ./sdk directory. (Thanks to @eviweb)
+- Fixes:
+	- Fixed an issue with duplicate submission rows showing in the Moodle database.
+	- Fixed an issue with anonymous marking where the overall grade would sometimes not appear.
+	- The assignment edit API call no longer fails if repository settings don't match the plugin settings.
+	- The submission processing message that was missing in Moodle 3.1 is now visible again.
+	- Fixed a bug where the submission inbox would not load if an enrolled student has been deleted in Turnitin.
+	- Characters that cannot be used in a file name in Windows are now removed from submission titles to prevent submission errors.
+
+---
+
+### Date:		2016-December-21
+### Release:	v2016122101
+
+- Fixes:
+	- Changed the language codes to correctly recognise Simplified Chinese in Moodle.
+	- Pass the correct Simplified Chinese language code to Turnitin.
+
+---
+
+### Date:		2016-September-14
+### Release:	v2016091401
+
+- Remove leftover counter variable from get_submission_inbox function.
+- Refactored the get users functionality in several places to not include users with roles inherited from site level.
+- Fixes:
+	- Add missing string to email non submitters.
+	- Check $CFG exists before using in version.php (Thanks to @micaherne).
+	- Assignments starting more than a year ago can now be restored without user info.
+	- Check for GradeMark feedback changes when saving submission.
+	- Only show GradeMark launch to student if the paper has feedback or grade.
+	- Slight tweak to overall grade to show overall grade on normal assignments.
+
+---
+
+### Date: 		2016-July-26
+### Release:	v2016072601
+
+- Verified against Moodle 3.1
+- Changed display of names to be consistent with Moodle (Thanks to junwan6).
+- Improved the way grade updates are handled for entering grades to the gradebook.
+- Fixes:
+	- Ignore inherited roles when sending instructor notifications.
+	- Scheduled tasks problems with deleting classes from database where no entry exists in course_modules table.
+	- Replace a couple of missing icons in plugin configuration area.
+	- Grade related settings are now hidden if GradeMark is not enabled.
+
+---
+
+### Date:       2016-April-11
+### Release:    v2016011105
+
+- Added support form to contact Tii support directly from the plugin.
+- Datatables styling now specific to Turnitin tables to avoid conflict.
+- Activity logs for submissions are now more informative.
+- Created warning on config page for the customer to check whether translated matching and ETS are configured at account level
+- Fixes:
+	- Fixed issue with postdate in anonymous marking mode - the page now warns the user the impact on anonymity of moving the post-date.
+	- Enrolls user if necessary when performing a course restoration.
+	- Fixed cron logic to prevent multiple assignment creation upon cron event failure.
+
+---
+
 ### Date:       2016-February-23
 ### Release:    v2016011104
 
@@ -355,8 +501,8 @@ Releases before version 2015040106 will refer to changes made to the Turnitin's 
 
 ---
 
-###Date:       2014-September-04
-###Release:    v2014012407
+### Date:       2014-September-04
+### Release:    v2014012407
 
 - Remove Grademark settings if GradeMark is disabled. (Thanks to Alex Rowe)
 - Date handling reconfigured in PP to prevent erros (Thanks to Dan Marsden)
@@ -370,8 +516,8 @@ Releases before version 2015040106 will refer to changes made to the Turnitin's 
 
 ---
 
-###Date:       2014-August-19
-###Release:    v2014012406
+### Date:       2014-August-19
+### Release:    v2014012406
 
 - Error reporting added for files that are too large, small submissions and any other submission errors.
 - Error reporting added to cron.
@@ -380,7 +526,7 @@ Releases before version 2015040106 will refer to changes made to the Turnitin's 
 - Error indicators and rollover messages now displayed in inbox.
 - Error messages saved and displayed in settings area.
 - EULA moved to submission declaration and submission form hidden.
-- Turnitin Paper Id now shown next to submission to show that paper has been submitted. 
+- Turnitin Paper Id now shown next to submission to show that paper has been submitted.
 - Fixes:
 	- Long assignment titles are now truncated.
 	- Link to a file in Assignment Summary now renders correctly.
@@ -391,8 +537,8 @@ Releases before version 2015040106 will refer to changes made to the Turnitin's 
 
 ---
 
-###Date:       2014-June-11
-###Release:    v2014012405
+### Date:       2014-June-11
+### Release:    v2014012405
 
 - Course reset functionality added to remove Turnitin data when a class/module is reset.
 - Ability added to enable/disable Turnitin in individual modules.
@@ -414,7 +560,7 @@ Releases before version 2015040106 will refer to changes made to the Turnitin's 
 - User creation removed from restore procedure.
 - Additonal indexes added to database tables
 - Extra permission checks added for migration tool
-- Error message now shown if ajax request to get submissions times out 
+- Error message now shown if ajax request to get submissions times out
 - Improved CSS to scope only to plugins and files added to jQuery plugin organisation
 - Forum posts are now submitted to Turnitin when posted
 - Database dump added to PP settings page
@@ -439,15 +585,15 @@ Releases before version 2015040106 will refer to changes made to the Turnitin's 
 
 ---
 
-###Date:       2014-June-11
-###Release:    v2014012404
+### Date:       2014-June-11
+### Release:    v2014012404
 
 - EULA acceptance is now stored locally for submissions.
 
 ---
 
-###Date:       2014-April-17
-###Release:    v2014012403
+### Date:       2014-April-17
+### Release:    v2014012403
 
 - Grademark link removed for student if a grade has not been set in Plagiarism Plugin.
 - Feedback release date changed on forum with plagiarism plugin to be the same as start date.
@@ -456,16 +602,16 @@ Releases before version 2015040106 will refer to changes made to the Turnitin's 
 - Submissions in Plagiarism plugin stopped if there has been 5 unsuccessful attempts.
 - Link removed for Originality Report if there is no score.
 - Fixes:
-	- Incorrect links to GradeMark and Originality Report for students have been hidden. 
+	- Incorrect links to GradeMark and Originality Report for students have been hidden.
 	- Conflicts with Bootstrap theme for tooltips and fixed grademark link position.
 	- Incorrect settings link in the Plagiarism plugin.
-	- Timestamp was being incorrectly set preventing more than 1 batch of submissions updating from Turnitin. 
+	- Timestamp was being incorrectly set preventing more than 1 batch of submissions updating from Turnitin.
 	- Student is now enrolled on the class when checking EULA acceptance to ensure they are on account.
 
 ---
 
-###Date:       2014-February-26
-###Release:    v2014012402
+### Date:       2014-February-26
+### Release:    v2014012402
 
 - Vietnamese Language pack added.
 - Option to send draft submissions to Turnitin in Plagiarism Plugin reinstated.
@@ -488,19 +634,19 @@ Releases before version 2015040106 will refer to changes made to the Turnitin's 
 
 ---
 
-###Date:       2014-January-24
-###Release:    v2014012401
+### Date:       2014-January-24
+### Release:    v2014012401
 
 - File type limit removed.
-- Ability to accept no file added so that marks / grades can be allocated to non file submissions 
+- Ability to accept no file added so that marks / grades can be allocated to non file submissions
 - Dependencies added to plagiarism plugin and blocks
 - Fixes:
-	- Error occurring in course reset 
+	- Error occurring in course reset
 
 ---
 
-###Date: 		2013-December-18
-###Release:	v2013121801
+### Date: 		2013-December-18
+### Release:	v2013121801
 
 - Supports Turnitin Originality Checking, GradeMark and PeerMark
 - Allows access to the Rubric Manager and Quickmark Manager from within the Moodle environment

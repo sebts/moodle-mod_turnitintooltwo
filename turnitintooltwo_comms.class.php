@@ -19,6 +19,8 @@
  * and open the template in the editor.
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(__DIR__.'/sdk/api.class.php');
 require_once(__DIR__.'/turnitintooltwo_perflog.class.php');
 
@@ -64,7 +66,7 @@ class turnitintooltwo_comms {
             $api->setLogPath($CFG->tempdir.'/turnitintooltwo/logs/');
         }
 
-        // Use Moodle's proxy settings if specified
+        // Use Moodle's proxy settings if specified.
         if (!empty($CFG->proxyhost)) {
             $api->setProxyHost($CFG->proxyhost);
         }
@@ -89,16 +91,16 @@ class turnitintooltwo_comms {
             $api->setProxyBypass($CFG->proxybypass);
         }
 
-        $plugin_version = turnitintooltwo_get_version();
+        $pluginversion = turnitintooltwo_get_version();
         $api->setIntegrationVersion($CFG->version);
-        $api->setPluginVersion($plugin_version);
+        $api->setPluginVersion($pluginversion);
 
         if (is_readable("$CFG->dataroot/moodleorgca.crt")) {
             $certificate = realpath("$CFG->dataroot/moodleorgca.crt");
             $api->setSSLCertificate($certificate);
         }
 
-        // Offline mode provided by Androgogic
+        // Offline mode provided by Androgogic.
         if (!empty($CFG->tiioffline) && !$istestingconnection && empty($tiipp->in_use)) {
             turnitintooltwo_print_error('turnitintoolofflineerror', 'turnitintooltwo');
         }
@@ -114,8 +116,11 @@ class turnitintooltwo_comms {
      * @param object $e
      * @param string $tterrorstr
      * @param boolean $toscreen
+     * @param boolean $embedded
      */
     public static function handle_exceptions($e, $tterrorstr = "", $toscreen = true, $embedded = false) {
+        global $CFG;
+
         $errorstr = "";
         if (!empty($tterrorstr)) {
             $errorstr = get_string($tterrorstr, 'turnitintooltwo')."<br/><br/>";
@@ -124,24 +129,32 @@ class turnitintooltwo_comms {
             }
         }
 
-        if (is_callable(array($e, 'getFaultCode'))) {
-            $errorstr .= get_string('faultcode', 'turnitintooltwo').": ".$e->getFaultCode()." | ";
-        }
+        // Show full debugging information if developer mode is on.
+        if ($CFG->debug == DEBUG_DEVELOPER) {
+            if (is_callable(array($e, 'getFaultCode'))) {
+                $errorstr .= get_string('faultcode', 'turnitintooltwo').": ".$e->getFaultCode()." | ";
+            }
 
-        if (is_callable(array($e, 'getFile'))) {
-            $errorstr .= get_string('file').": ".$e->getFile()." | ";
-        }
+            if (is_callable(array($e, 'getFile'))) {
+                $errorstr .= get_string('file').": ".$e->getFile()." | ";
+            }
 
-        if (is_callable(array($e, 'getLine'))) {
-            $errorstr .= get_string('line', 'turnitintooltwo').": ".$e->getLine()." | ";
-        }
+            if (is_callable(array($e, 'getLine'))) {
+                $errorstr .= get_string('line', 'turnitintooltwo').": ".$e->getLine()." | ";
+            }
 
-        if (is_callable(array($e, 'getMessage'))) {
-            $errorstr .= get_string('message', 'turnitintooltwo').": ".$e->getMessage()." | ";
-        }
+            if (is_callable(array($e, 'getMessage'))) {
+                $errorstr .= get_string('message', 'turnitintooltwo').": ".$e->getMessage()." | ";
+            }
 
-        if (is_callable(array($e, 'getCode'))) {
-            $errorstr .= get_string('code', 'turnitintooltwo').": ".$e->getCode();
+            if (is_callable(array($e, 'getCode'))) {
+                $errorstr .= get_string('code', 'turnitintooltwo').": ".$e->getCode();
+            }
+        } else {
+            // Only show message if full debugging is not on.
+            if (is_callable(array($e, 'getMessage'))) {
+                $errorstr .= get_string('message', 'turnitintooltwo').": ".$e->getMessage();
+            }
         }
 
         turnitintooltwo_activitylog($errorstr, "API_ERROR");
@@ -166,9 +179,10 @@ class turnitintooltwo_comms {
             'fr' => 'fr',
             'fr_ca' => 'fr',
             'es' => 'es',
+            'es_mx' => 'es',
             'de' => 'de',
             'de_du' => 'de',
-            'zh_cn' => 'cn',
+            'zh_cn' => 'zh_hans',
             'zh_tw' => 'zh_tw',
             'pt_br' => 'pt_br',
             'th' => 'th',
@@ -184,5 +198,12 @@ class turnitintooltwo_comms {
         );
         $langcode = (isset($langarray[$langcode])) ? $langarray[$langcode] : 'en_us';
         return $langcode;
+    }
+
+    /**
+     * @param int $diagnostic Set diagnostic setting.
+     */
+    public function set_diagnostic($diagnostic) {
+        $this->diagnostic = $diagnostic;
     }
 }

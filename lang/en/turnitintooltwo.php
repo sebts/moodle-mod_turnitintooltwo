@@ -1,7 +1,22 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 // Version: 2015040101
 // Date: 2015-04-01
-// Language: en
+// Language: en.
 
 $string['addsubmission'] = 'Add Submission';
 $string['allowlate'] = 'Allow Submissions after the Due Date';
@@ -52,13 +67,12 @@ $string['maxfilesize'] = 'Maximum File Size';
 $string['maxfilesize_help'] = 'This setting determines the maximum file size for user submissions to each assignment part. The maximum value you can set this value to is dictated by the value set in course settings, this value is further capped to a maximum file size of 40Mb which is the maximum allowed filesize for file uploads to Turnitin.';
 $string['maxlength'] = 'The maximum length for {$a->field} is {$a->length} characters';
 $string['maxmarks'] = 'Max Marks';
-$string['pluginname'] = 'Turnitin Assignment';
-$string['modulename'] = 'Turnitin Assignment';
+$string['pluginname'] = 'Turnitin Assignment 2';
+$string['modulename'] = 'Turnitin Assignment 2';
 $string['modulenameplural'] = 'Turnitin Assignments';
 $string['moduleversion'] = 'Version';
 $string['mysubmissions'] = 'My Submissions';
 $string['nolimit'] = 'No Limit';
-$string['nonmoodlestudents'] = 'Non Moodle Students';
 $string['nonmoodleuser'] = 'Non Moodle User';
 $string['norepository'] = 'No Repository';
 $string['nosubmissions'] = 'No submissions have been made';
@@ -127,7 +141,7 @@ $string['submissionupdateerror'] = 'Could not update submission data';
 $string['submissionuploadsuccess'] = 'Your submission has successfully been uploaded to Turnitin.';
 $string['submitpaper'] = 'Submit Paper';
 $string['submitpapersto'] = 'Store Student Papers';
-$string['submitpapersto_help'] = 'This setting provides instructors with the ability to select whether papers are stored in a Turnitin student paper repository. The benefit of submitting papers to the student paper repository is that student papers submitted to the assignment are checked against other students\&#39; submissions within your current and previous classes. If you select &#34;no repository&#34;, your students\&#39; papers will not be stored in the Turnitin student paper repository.';
+$string['submitpapersto_help'] = 'This setting provides instructors with the ability to select whether papers are stored in a Turnitin student paper repository. The benefit of submitting papers to the student paper repository is that student papers submitted to the assignment are checked against other students&#39; submissions within your current and previous classes. If you select &#34;no repository&#34;, your students&#39; papers will not be stored in the Turnitin student paper repository.';
 $string['submitted'] = 'Submitted';
 $string['submittoturnitin'] = 'Submit to Turnitin';
 $string['textsubmission'] = 'Text Submission';
@@ -215,8 +229,8 @@ $string['erater_handbook_learners'] = 'English Learners';
 $string['erater_dictionary_enus'] = 'US English Dictionary';
 $string['erater_dictionary_engb'] = 'UK English Dictionary';
 $string['erater_dictionary_en'] = 'Both US and UK English Dictionaries';
-$string['turnitinuseerater'] = 'Enable ETS&copy';
-$string['turnitinuseerater_desc'] = 'Choose whether to enable ETS&copy grammar checking.<br /><i>(Enable this option only if ETS&copy e-rater is enabled on your Turnitin account)</i>';
+$string['turnitinuseerater'] = 'Enable ETS&copy;';
+$string['turnitinuseerater_desc'] = 'Choose whether to enable ETS&copy; grammar checking.<br /><i>(Enable this option only if ETS&copy; e-rater is enabled on your Turnitin account)</i>';
 $string['student_read'] = 'The student viewed the paper on:';
 $string['student_notread'] = 'The student has not viewed this paper.';
 $string['relinkusers'] = 'Relink Users';
@@ -419,7 +433,6 @@ $string['defaultupdateerror'] = 'There was an error when trying to update a defa
 $string['defaultupdated'] = 'Turnitin defaults updated';
 $string['pp_createsubmissionerror'] = 'There was an error in the plagiarism plugin when creating a submission';
 $string['pp_updatesubmissionerror'] = 'There was an error in the plagiarism plugin when updating a submission';
-$string['pp_configuredesc'] = 'You must configure this module within the turnitintooltwo module. Please click <a href={$a}/admin/settings.php?section=modsettingturnitintooltwo>here</a> to configure this plugin';
 $string['coursestomigrate'] = 'You have {$a} classes available to restore from Turnitin';
 $string['gradingtemplate'] = 'Grading Template';
 $string['allownonor'] = 'Allow submission of any file type?';
@@ -441,11 +454,7 @@ $string['checkupgrade'] = 'Check for available upgrade';
 $string['checkingupgrade'] = 'Checking for available upgrade';
 $string['usinglatest'] = 'You are using the latest version!';
 $string['useturnitin_mod'] = 'Enable Turnitin for {$a}';
-$string['errorcode2'] = 'This file will not be submitted to Turnitin as it exceeds the maximum size of {$a} allowed';
 $string['notorcapable'] = 'It is not possible to produce an Originality Report for this file.';
-$string['pastfiveattempts'] = 'This file will not be submitted to Turnitin as it has exceeded the maximum 5 permitted attempts.';
-$string['errorcode3'] = 'This file has not been submitted to Turnitin because the user has not accepted the Turnitin End User Licence Agreement.';
-$string['ppsubmissionerrorstudent'] = 'This file has not been submitted to Turnitin, please consult your tutor for further details';
 $string['redirecttoeula'] = 'We are redirecting you to the End User Licence Agreement';
 $string['filedoesnotexist'] = 'File has been deleted';
 $string['eventremoved'] = 'This event has been removed the cron queue and will not be processed again.';
@@ -481,27 +490,20 @@ $string['turnitinpaperid'] = 'Turnitin Paper ID';
 $string['submissionauthor'] = 'Submission Author';
 $string['receiptparagraph'] = 'This receipt acknowledges that Turnitin received your paper. Below you will find the receipt information regarding your submission.';
 $string['objectid'] = 'Turnitin Paper ID';
-$string['ppanonmarkingnote'] = 'Note: Anonymous Marking only applies to Turnitin GradeMark. It is controlled by the assignment post date within Turnitin. Turnitin will use the &#39;hidden until&#39; date as the post date, which can be set by editing the grade item in the Course gradebook report.';
 $string['anonalert'] = 'Your post date is before your current time, this will permanently disable anonymous marking for this assignment if you save this.';
 $string['turnitinapiurl_desc'] = '<b>[Required]</b><br />Select a Turnitin API URL';
 $string['tii_submission_failure'] = 'Please consult your tutor or Moodle administrator for further details';
 $string['turnitinrefreshingsubmissions'] = 'Refreshing Submissions';
 $string['turnitinanon_help'] = 'You can configure your Turnitin assignment to use Anonymous Marking by setting this value to Yes. Once a submission is made anonymous marking cannot be disabled.';
-$string['locked_message'] = 'Locked message';
-$string['locked_message_help'] = 'If any settings are locked, this message is shown to say why.';
-$string['locked_message_default'] = 'This setting is locked at the site level';
-$string['errorcode1'] = 'This file has not been sent to Turnitin as it does not have enough content to produce an Originality Report.';
 $string['digital_receipt_subject'] = 'This is your Turnitin Digital Receipt';
 $string['digital_receipt_message'] = 'Dear {$a->firstname} {$a->lastname},<br /><br />You have successfully submitted the file <strong>{$a->submission_title}</strong> to the assignment <strong>{$a->assignment_name}{$a->assignment_part}</strong> in the class <strong>{$a->course_fullname}</strong> on <strong>{$a->submission_date}</strong>. Your submission id is <strong>{$a->submission_id}</strong>. Your full digital receipt can be viewed and printed from the assignment inbox or from the print/download button in the document viewer.<br /><br />Thank you for using Turnitin,<br /><br />The Turnitin Team';
 $string['messageprovider:submission'] = 'Turnitin Assignment Digital Receipt notifications';
-$string['ppsubmissionerrorseelogs'] = 'This file has not been submitted to Turnitin, please consult your system administrator';
 $string['errorenrollingall'] = 'There has been an error enrolling all students on Turnitin - Please consult your system administrator';
 $string['ppassignmentcreateerror'] = 'This module could not be created on Turnitin, please consult your API logs for further information';
 $string['pp_classcreationerror'] = 'This class could not be created on Turnitin, please consult your API logs for further information';
 $string['pp_submission_error'] = 'Turnitin has returned an error with your submission:';
 $string['turnitinppulapre'] = 'To submit a file to Turnitin you must first accept our EULA. Choosing to not accept our EULA will submit your file to Moodle only. Click here to accept.';
 $string['turnitinppulapost'] = 'Your file has not been submitted to Turnitin. Please click here to accept our EULA.';
-$string['errorcode0'] = 'This file has not been submitted to Turnitin, please consult your system administrator';
 $string['listsubmissionsdesc_student'] = 'User viewed their submission inbox at course';
 $string['gradenosubmission'] = 'User enabled grading without a submission for the user with id';
 $string['turnitinstatus'] = 'Turnitin status';
@@ -510,15 +512,11 @@ $string['resubmitting'] = 'Resubmitting';
 $string['addresubmissiontiidesc'] = 'User resubmission sent to Turnitin';
 $string['addsubmissiontiidesc'] = 'User submission sent to Turnitin';
 $string['deletesubmissiontiidesc'] = 'User deleted the submission from Turnitin';
-$string['errorcode4'] = 'You must upload a supported file type for this assignment. Accepted file types are; .doc, .docx, .ppt, .pptx, .pps, .ppsx, .pdf, .txt, .htm, .html, .hwp, .odt, .wpd, .ps and .rtf';
 $string['download'] = 'Download';
 $string['grademarkzip'] = 'Selected GradeMark Files';
 $string['origfileszip'] = 'Original Files';
 $string['sharedrubric'] = 'Shared Rubric';
 $string['resubmitselected'] = 'Resubmit Selected Files';
-$string['pperrorsdesc'] = 'There has been a problem in trying to upload the files below to Turnitin. To resubmit, select the files you wish to resubmit and press the resubmit button. These will then be processed the next time the cron is run.';
-$string['pperrorssuccess'] = 'The files you selected have been resubmitted and will be processed by the cron.';
-$string['pperrorsfail'] = 'There was a problem with some of the files you selected, A new cron event could not be created for them.';
 $string['turnitininboxlayout'] = 'Assignment Page Layout';
 $string['turnitininboxlayout_desc'] = 'Choose whether the Turnitin Assignment page should show navigation or be displayed full width.';
 $string['layoutoptions_0'] = 'Full width';
@@ -543,22 +541,32 @@ $string['displaygradesaspercent'] = 'Show grades as Percentage (e.g. 89&#37;)';
 $string['genspeednote'] = 'Note: Originality Report generation for resubmissions is subject to a twenty-four hour delay.';
 $string['cronsubmittedsuccessfully'] = 'Submission: {$a->title} (TII ID: {$a->submissionid}) for the assignment {$a->assignmentname} on the course {$a->coursename} was successfully submitted to Turnitin.';
 $string['ppassignmentediterror'] = 'Module {$a->title} (TII ID: {$a->assignmentid}) could not be edited on Turnitin, please consult your API logs for further information';
-$string['ppeventsfailedconnection'] = 'No events will be processed by the Turnitin plagiarism plugin by this cron execution as a connection to Turnitin can not be established.';
-$string['ppcronsubmissionlimitreached'] = 'No further submissions will be sent to Turnitin by this cron execution as only {$a} are processed per run';
-$string['errorcode5'] = 'This file has not been submitted to Turnitin because there is a problem creating the module in Turnitin which is preventing submissions, please consult your API logs for further information';
-$string['errorcode6'] = 'This file has not been submitted to Turnitin because there is a problem editing the module settings in Turnitin which is preventing submissions, please consult your API logs for further information';
-$string['ppqueuesize'] = 'Number of events in the Plagiarism Plugin events queue';
-$string['errorcode7'] = 'This file has not been submitted to Turnitin because there is a problem creating the user in Turnitin which is preventing submissions, please consult your API logs for further information';
 $string['nombstringlibrary'] = 'To use this plugin you will need to have the PHP mbstring extension installed on your server.';
 $string['receipt_instructor_copy'] = 'A submission entitled <strong>{$a->submission_title}</strong> has been made to assignment <strong>{$a->assignment_name}{$a->assignment_part}</strong> in the class <strong>{$a->course_fullname}</strong>.<br /><br />Submission ID: <strong>{$a->submission_id}</strong><br />Submission Date: <strong>{$a->submission_date}</strong><br />';
 $string['receipt_instructor_copy_subject'] = 'Submission made to assignment';
 $string['instructorreceipt'] = 'Notify Instructor upon Submission';
 $string['instructorreceipt_desc'] = 'Choose whether to send a notification to each instructor on a course when a submission is made to an assignment.';
-$string['errorcode8'] = 'This file has not been submitted to Turnitin because there is a problem creating the temp file. The most likely cause is an invalid file name. Please rename the file and re-upload using Edit Submission.';
-$string['errorcode9'] = 'The file cannot be submitted as there is no accessible content in the file pool to submit.';
 $string['loadingdv'] = 'Loading Turnitin Document Viewer...';
-$string['pp_digital_receipt_message'] = 'Dear {$a->firstname} {$a->lastname},<br /><br />You have successfully submitted the file <strong>{$a->submission_title}</strong> to the assignment <strong>{$a->assignment_name}{$a->assignment_part}</strong> in the class <strong>{$a->course_fullname}</strong> on <strong>{$a->submission_date}</strong>. Your submission id is <strong>{$a->submission_id}</strong>. Your full digital receipt can be viewed and printed from from the print/download button in the Document Viewer.<br /><br />Thank you for using Turnitin,<br /><br />The Turnitin Team';
 $string['messageprovider:notify_instructor_of_submission'] = 'Turnitin Assignment Instructor Digital Receipt notifications';
+$string['postdate_warning'] = 'Please be aware that changing the assignment dates may affect when grades are visible to the student and when the student\'s identities are revealed to instructors.';
 $string['task_name'] = 'Turnitintooltwo Cron Task';
 $string['crontaskmodeactive'] = 'Turnitintooltwo - Aborted Cron call because of active task mode';
 $string['restorationheader'] = 'Turnitin Class Restoration';
+$string['turnitinhelpdesk'] = 'Turnitin Helpdesk';
+$string['helpdesklink'] = 'Need Help with Turnitin?';
+$string['turnitinsettingshelpwizard'] = 'Enable Turnitin helpdesk for Instructors';
+$string['turnitinsettingshelpwizard_desc'] = 'Choose whether instructors are able to access the Turnitin helpdesk wizard from within Moodle.';
+$string['tiiaccountconfig'] = 'Turnitin Account Configuration';
+$string['tiiaccountsettings'] = 'Turnitin Account Settings';
+$string['tiiaccountsettings_desc'] = 'Please ensure these settings match those configured in your Turnitin account, otherwise you may experience issues with assignment creation and/or student submissions.';
+$string['tiimiscsettings'] = 'Miscellaneous Plugin Settings';
+$string['tiidebugginglogs'] = 'Debugging and Logging';
+$string['diagnosticoptions_0'] = 'Off';
+$string['diagnosticoptions_1'] = 'Standard';
+$string['diagnosticoptions_2'] = 'Debugging';
+$string['nofinfolibrary'] = 'To use this plugin you will need to have the PHP Fileinfo extension installed on your server.';
+$string['nosoaplibrary'] = 'To use this plugin you will need to have the PHP SOAP extension installed on your server.';
+$string['refreshallgrades'] = 'Refresh all Grades from Turnitin';
+$string['refreshingallgrades'] = 'Refreshing Grades from Turnitin';
+$string['studentfirstname'] = 'First Name';
+$string['studentlastname'] = 'Last Name';
